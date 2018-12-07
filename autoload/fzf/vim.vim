@@ -332,6 +332,9 @@ function! s:line_handler(lines)
         if t
             call s:jump(t, w)
             return
+        else
+            execute 'tabe'
+            execute 'buffer' b 
         endif
     else
         execute 'buffer' keys[0]
