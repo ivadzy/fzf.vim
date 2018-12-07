@@ -315,19 +315,30 @@ endfunction
 " Lines
 " ------------------------------------------------------------------
 function! s:line_handler(lines)
-  if len(a:lines) < 2
-    return
-  endif
-  normal! m'
-  let cmd = s:action_for(a:lines[0])
-  if !empty(cmd) && stridx('edit', cmd) < 0
-    execute 'silent' cmd
-  endif
+    if len(a:lines) < 2
+        return
+    endif
+    normal! m'
+    let cmd = s:action_for(a:lines[0])
+    if !empty(cmd) && stridx('edit', cmd) < 0
+        execute 'silent' cmd
+    endif
 
-  let keys = split(a:lines[1], '\t')
-  execute 'buffer' keys[0]
-  execute keys[2]
-  normal! ^zvzz
+    let keys = split(a:lines[1], '\t')
+
+    if empty(a:lines[0]) && get(g:, 'fzf_buffers_jump')
+        let b = matchstr(keys[0], '\d\+')
+        let [t, w] = s:find_open_window(b)
+        if t
+            call s:jump(t, w)
+            return
+        endif
+    else
+        execute 'buffer' keys[0]
+        execute keys[2]
+    endif
+
+    normal! ^zvzz
 endfunction
 
 function! fzf#vim#_lines(all)
